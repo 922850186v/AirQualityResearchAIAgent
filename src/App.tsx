@@ -7,6 +7,7 @@ import {
 	CartesianGrid,
 	Tooltip,
 	ResponsiveContainer,
+	Legend,
 } from "recharts";
 
 const sampleQuestions = [
@@ -53,12 +54,29 @@ const App: React.FC = () => {
 	};
 
 	const getChartData = () => {
-		if (!result?.table || !result.table.data) return [];
-		return Object.entries(result.table.data).map(([key, value]) => ({
-			name: key,
-			value: Number(value),
-		}));
+		if (!result?.table?.data) return [];
+
+		const valueLabel = result.table.value_label || "value";
+
+		return Object.entries(result.table.data).map(([key, value]) => {
+			if (typeof value === "object") {
+				return {
+					name: key,
+					...value,
+				};
+			}
+			return {
+				name: key,
+				[valueLabel]: Number(value), // dynamic key
+			};
+		});
 	};
+
+	const chartData = getChartData(); // from your function
+	const dataKeys =
+		chartData.length > 0
+			? Object.keys(chartData[0]).filter((k) => k !== "name")
+			: [];
 
 	return (
 		<div>
@@ -178,18 +196,31 @@ const App: React.FC = () => {
 								</tbody>
 							</table>
 
-							<div className='mt-5 w-75'>
-								<h3>Line Chart:</h3>
-								<ResponsiveContainer width='100%' height={300}>
-									<LineChart data={getChartData()}>
-										<CartesianGrid strokeDasharray='3 3' />
-										<XAxis dataKey='name' />
-										<YAxis />
-										<Tooltip />
-										<Line type='monotone' dataKey='value' stroke='#007bff' />
-									</LineChart>
-								</ResponsiveContainer>
-							</div>
+							{chartData.length > 0 && (
+								<div className='mt-6'>
+									<h3 className='text-lg font-semibold mb-2'>Line Chart:</h3>
+									<ResponsiveContainer width='100%' height={300}>
+										<LineChart data={chartData}>
+											<CartesianGrid strokeDasharray='3 3' />
+											<XAxis dataKey='name' />
+											<YAxis domain={["dataMin - 10", "dataMax + 10"]} />
+											<Tooltip />
+											<Legend />
+											{dataKeys.map((key, index) => (
+												<Line
+													key={key}
+													type='monotone'
+													dataKey={key}
+													stroke={["#8884d8", "#82ca9d", "#ff7300"][index % 3]}
+													strokeWidth={2}
+													hide={false}
+													dot={false}
+												/>
+											))}
+										</LineChart>
+									</ResponsiveContainer>
+								</div>
+							)}
 						</>
 					)}
 				</div>
