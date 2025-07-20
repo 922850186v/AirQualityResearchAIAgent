@@ -44,7 +44,7 @@ const App: React.FC = () => {
 				...data,
 				result: JSON.parse(data.result),
 			};
-			console.log(parsed);
+			// console.log(parsed);
 			setResult(parsed.result);
 		} catch (error) {
 			setResult({ summary: "Error connecting to backend." });
@@ -67,12 +67,12 @@ const App: React.FC = () => {
 			}
 			return {
 				name: key,
-				[valueLabel]: Number(value), // dynamic key
+				[valueLabel]: Number(value), 
 			};
 		});
 	};
 
-	const chartData = getChartData(); // from your function
+	const chartData = getChartData(); 
 	const dataKeys =
 		chartData.length > 0
 			? Object.keys(chartData[0]).filter((k) => k !== "name")
