@@ -9,13 +9,11 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from typing import List
 from openai import OpenAI
-# import anthropic
 
 load_dotenv()
 
 app = FastAPI()
 
-# Allow frontend to access this backend (adjust origin as needed)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
