@@ -8,8 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from typing import List
-# import openai
-import anthropic
+from openai import OpenAI
+# import anthropic
 
 load_dotenv()
 
@@ -24,8 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-anthropic_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 data_dir = "data"
 
@@ -78,11 +77,11 @@ def prepare_dataframe():
     return df
 
 def analyze_with_llm(query: str, df: pd.DataFrame):
-    sample_data = df.sample(n=min(200, len(df))).to_csv(index=False)
+    sample_data = df.sample(n=min(100, len(df))).to_csv(index=False)
 
     system_prompt = (
         "You are a data analysis assistant expert. You will be given a user query and a sample of a data table.\n"
-        "Use pandas to write Python code that answers the question.\n"
+        "Analyze the given data and respond with appropriate details.\n"
         "If the query is about breakdown by hour, day, or similar category, respond with a JSON object like:\n"
         "{\n"
         "  \"summary\": str, //  Use around 100 words to summary \n"
@@ -92,9 +91,10 @@ def analyze_with_llm(query: str, df: pd.DataFrame):
         "    \"data\": { key: value, ... }\n"
         "  }\n"
         "}\n"
-        "If a table is not applicable, set \"table\": null or an empty object and write about 300 words to the summary\n"
-        "Response include only the said formatted data.\n"
-        "Avoid returning markdown table format; use key-value pairs when showing summarized data."
+        "If a table is not applicable, set \"table\": null or an empty object and write about 300 words to the summary in point form\n"
+        "Response include only the said formatted data And don't return any reading data from raw files.\n"
+        "Avoid returning null value for table data.\n"
+        "Avoid returning markdown table format or any other information; use key-value pairs when showing summarized data."
     )
 
     user_prompt = f"""
@@ -104,16 +104,16 @@ def analyze_with_llm(query: str, df: pd.DataFrame):
     {sample_data}
     """
 
-    response = anthropic_client.messages.create(
-        model="claude-3-5-sonnet-20241022", 
-        max_tokens=1024,
-        temperature=0.5,
-        system=system_prompt,
+    response = client.chat.completions.create(
+        model="gpt-4",
         messages=[
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
-        ]
+        ],
+        temperature=0.5,
+        max_tokens=1024
     )
-    result = response.content[0].text.strip()
+    result = response.choices[0].message.content.strip()
     return result
 
 @app.get("/connection/health")
@@ -125,4 +125,3 @@ async def query_agent(request: QueryRequest):
     df = prepare_dataframe()
     result = analyze_with_llm(request.query, df)
     return {"result": result}
-
