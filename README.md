@@ -8,8 +8,8 @@ A full-stack AI-powered query agent for analyzing room sensor data like temperat
 
 - 📈 Analyze room sensor data across multiple text files.
 - 🤖 Ask natural language questions (e.g., *“How does CO2 change by day of week?”*).
-- 📊 Get tabular + summary answers powered by Anthropic AI.
-- 🌐 Clean, interactive frontend UI (React + Tailwind).
+- 📊 Get tabular + summary answers powered by OpenAI AI.
+- 🌐 Clean, interactive frontend UI (React + Bootstrap).
 - 🔗 Fully decoupled backend and frontend with CORS configured.
 
 ---
@@ -20,7 +20,7 @@ room-sensor-query/
 ├── backend/ # FastAPI app
 │ ├── main.py # Core backend logic
 │ ├── data/ # Folder with sensor data in .txt files
-│ └── .env # Environment file with ANTHROPIC_API_KEY
+│ └── .env # Environment file with OPENAI_API_KEY
 │
 ├── frontend/ # React + Tailwind UI
 │ ├── index.html
@@ -36,7 +36,7 @@ room-sensor-query/
 
 ## 🚀 Getting Started
 
-### 1️⃣ Backend Setup (FastAPI + Anthropic)
+### 1️⃣ Backend Setup (FastAPI + OpenAI)
 
 ```bash
 cd backend
