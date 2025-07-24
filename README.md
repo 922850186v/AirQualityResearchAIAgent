@@ -1,6 +1,6 @@
 # 🏠 Room Sensor Query Agent
 
-A full-stack AI-powered query agent for analyzing room sensor data like temperature, CO2, and humidity over time. Built with **FastAPI (Python)** as the backend, **OpenAI API** as the LLM, and a **React + Tailwind CSS** frontend for querying and visualization.
+A full-stack AI-powered query agent for analyzing room sensor data like temperature, CO2, and humidity over time. Built with **FastAPI (Python)** as the backend, **OpenAI API** as the LLM, and a **React + Bootstrap CSS** frontend for querying and visualization.
 
 ---
 
